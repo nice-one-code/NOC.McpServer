@@ -77,7 +77,7 @@ namespace NOC.McpServer.Auth
 
             var loginBody = new LoginRequest { UserId = userId, Password = password };
 
-            using var response = await authClient.PostAsJsonAsync("api/nclogin/Login", loginBody, ct);
+            using var response = await authClient.PostAsJsonAsync("api/nc-login/Login", loginBody, ct);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>(cancellationToken: ct)
