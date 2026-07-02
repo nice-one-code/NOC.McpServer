@@ -5,12 +5,29 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+  <!-- MCP / NuGet packaging -->
+  <PackageType>McpServer</PackageType>
+  <PackAsTool>true</PackAsTool>
+  <ToolCommandName>noc-mcp</ToolCommandName>
+  <PackageId>NOC.McpServer</PackageId>
+  <Version>1.0.0</Version>
+
+  <!-- NuGet package metadata -->
+  <Authors>NiceOneCode</Authors>
+  <Description>MCP server exposing NiceOneCode's JSON-to-C# class converter as an AI-callable tool.</Description>
+  <PackageProjectUrl>https://github.com/nice-one-code/NOC.McpServer</PackageProjectUrl>
+  <RepositoryUrl>https://github.com/nice-one-code/NOC.McpServer</RepositoryUrl>
+  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
+  <PackageTags>mcp;model-context-protocol;ai;json-to-csharp;code-generation</PackageTags>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <Content Include=".mcp\server.json" />
+    <None Include="README.nuget.md" Pack="true" PackagePath="\" />
+    <None Include=".mcp/server.json" Pack="true" PackagePath="\.mcp\" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
     <PackageReference Include="ModelContextProtocol" Version="1.2.0" />
