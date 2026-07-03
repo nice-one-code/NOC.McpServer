@@ -4,6 +4,37 @@
 
 An MCP server exposing [NiceOneCode](https://www.niceonecode.com)'s JSON → C# class converter as a tool for AI assistants.
 
+## Creating an Account
+
+If you don't already have a NiceOneCode account, register one via API:
+
+```bash
+curl -X POST \
+  --header 'Content-Type: application/json' \
+  --header 'Accept: application/json' \
+  -d '{
+    "UserName": "your-username",
+    "Password": "your-password",
+    "Email": "your-email@example.com",
+    "GenderID": 1
+  }' \
+  'https://www.niceonecode.com/api/nc-register'
+```
+
+| Field | Description |
+|---|---|
+| `UserName` | Desired username |
+| `Password` | Desired password — use this as `NOC_PASSWORD` |
+| `Email` | A valid email address |
+| `GenderID` | `1` = Male, `2` = Female |
+
+**Important:** the response body is a plain string, not a JSON object — for example:
+```json
+"your-userid"
+```
+
+Use this returned value as `NOC_USERID`. Don't assume it will always match the `UserName` you submitted — always use the value the API actually returns.
+
 ## Install
 
 ```bash
@@ -21,6 +52,8 @@ Requires a NiceOneCode account. Set these environment variables in your MCP clie
 
 ## Usage with Claude Desktop
 
+Edit `claude_desktop_config.json` (Windows: `%APPDATA%\Claude\claude_desktop_config.json`, macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`):
+
 ```json
 {
   "mcpServers": {
@@ -34,6 +67,111 @@ Requires a NiceOneCode account. Set these environment variables in your MCP clie
   }
 }
 ```
+
+Fully quit and reopen Claude Desktop after editing.
+
+## Usage with Claude Code
+
+```bash
+claude mcp add-json niceonecode '{"command":"noc-mcp","env":{"NOC_USERID":"your-userid","NOC_PASSWORD":"your-password"}}'
+```
+
+Verify with `claude mcp list`.
+
+## Usage with Codex
+
+```bash
+codex mcp add niceonecode --env NOC_USERID=your-userid --env NOC_PASSWORD=your-password -- noc-mcp
+```
+
+Verify inside a session with `/mcp`.
+
+## Usage with Gemini CLI
+
+Edit `~/.gemini/settings.json` (global) or `.gemini/settings.json` (project-specific):
+
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "noc-mcp",
+      "env": {
+        "NOC_USERID": "your-userid",
+        "NOC_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+Restart Gemini CLI, then run `/mcp` to confirm it's connected.
+
+**Windows note:** if the server fails to start directly, wrap it through `cmd`:
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "cmd",
+      "args": ["/c", "noc-mcp"],
+      "env": { "NOC_USERID": "your-userid", "NOC_PASSWORD": "your-password" }
+    }
+  }
+}
+```
+
+## Usage with Windsurf
+
+Edit `~/.codeium/windsurf/mcp_config.json` (macOS/Linux) or `%USERPROFILE%\.codeium\windsurf\mcp_config.json` (Windows), or open it via the MCPs icon in the Cascade panel → **Configure**:
+
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "noc-mcp",
+      "env": {
+        "NOC_USERID": "your-userid",
+        "NOC_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+Fully quit and reopen Windsurf after saving.
+
+## Usage with Devin
+
+**Devin (cloud):** Settings → Connections → MCP servers → **Add a custom MCP**:
+
+```json
+{
+  "transport": "STDIO",
+  "command": "noc-mcp",
+  "args": [],
+  "env_variables": {
+    "NOC_USERID": "your-userid",
+    "NOC_PASSWORD": "your-password"
+  }
+}
+```
+
+**Devin for Terminal:** add to `.devin/config.json`:
+
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "noc-mcp",
+      "env": {
+        "NOC_USERID": "your-userid",
+        "NOC_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+**Devin Desktop** shares Windsurf's `mcp_config.json` — no separate setup needed if already configured above.
 
 ## Source
 
