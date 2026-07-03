@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
   "description": "MCP server exposing NiceOneCode's JSON-to-C# class converter as an AI-callable tool. Requires a NiceOneCode account.",
-  "name": "io.github.nice-one-code/NOC.McpServer",
+  "name": "io.github.mr-rahulmaurya/NOC.McpServer",
   "version": "1.0.0",
   "packages": [
     {
