@@ -15,6 +15,37 @@ Authentication is handled transparently: the server logs in to your NiceOneCode 
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
 - A NiceOneCode account (userid + password)
 
+## Creating an Account
+
+If you don't already have a NiceOneCode account, you can register one via API:
+
+```bash
+curl -X POST \
+  --header 'Content-Type: application/json' \
+  --header 'Accept: application/json' \
+  -d '{
+    "UserName": "your-username",
+    "Password": "your-password",
+    "Email": "your-email@example.com",
+    "GenderID": 1
+  }' \
+  'https://www.niceonecode.com/api/nc-register'
+```
+
+| Field | Description |
+|---|---|
+| `UserName` | Desired username |
+| `Password` | Desired password — use this as `NOC_PASSWORD` |
+| `Email` | A valid email address |
+| `GenderID` | `1` = Male, `2` = Female |
+
+**Important:** the response body is a plain string, not a JSON object — for example:
+```json
+"your-userid"
+```
+
+Use this returned value as `NOC_USERID` (not necessarily assumed to always match the `UserName` you submitted — always use the value the API actually returns, rather than the value you sent).
+
 ## Setup
 
 1. Clone the repo:
