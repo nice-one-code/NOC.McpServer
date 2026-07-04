@@ -12,14 +12,23 @@ namespace NOC.McpServer.Tools
         [McpServerTool, Description("Converts a JSON sample into C# class definitions using the NiceOneCode json-to-cSharp converter.")]
         public static async Task<string> JsonToCSharp(
         IHttpClientFactory httpClientFactory,
-        [Description("The JSON sample to convert into C# classes")] string json)
+        [Description("The JSON sample to convert into C# classes")] string json,
+        [Description("Add [JsonProperty] attributes to generated properties")] bool addJsonPropertyAttribute = true,
+        [Description("Set NullValueHandling.Ignore on generated [JsonProperty] attributes")] bool nullValueHandlingIgnore = true,
+        [Description("Use the original JSON key as the JsonProperty name")] bool useJsonPropertyName = true,
+        [Description("Generate property names in PascalCase")] bool usePascalCase = true)
         {
             try
             {
                 var client = httpClientFactory.CreateClient("NOCHttpClient");
-
-                var payload = new { Code = json };
-
+                var payload = new
+                {
+                    Code = json,
+                    AddJsonPropertyAttribute = addJsonPropertyAttribute,
+                    NullValueHandlingIgnore = nullValueHandlingIgnore,
+                    UseJsonPropertyName = useJsonPropertyName,
+                    UsePascalCase = usePascalCase
+                };
                 using var response = await client.PostAsJsonAsync("api/nc-converter/json-to-cSharp", payload);
 
                 if (!response.IsSuccessStatusCode)
