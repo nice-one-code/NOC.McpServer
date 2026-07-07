@@ -1,6 +1,6 @@
 ﻿# NOC.McpServer
 
-<!-- mcp-name: io.github.mr-rahulmaurya/NOC.McpServer -->
+<!-- mcp-name: io.github.nice-one-code/NOC.McpServer -->
 
 An MCP server exposing [NiceOneCode](https://www.niceonecode.com)'s JSON → C# class converter as a tool for AI assistants.
 

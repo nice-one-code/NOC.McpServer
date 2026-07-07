@@ -138,7 +138,7 @@ Add to `.vscode/mcp.json` in your workspace, or your global VS Code MCP settings
 }
 ```
 
-VS Code will prompt for your userid and password the first time the server starts. Requires the .NET 10 SDK for `dnx`, which downloads and runs the latest published version on demand — no separate install step needed. Pin a specific version with `"NOC.McpServer@1.0.6"` instead of `"NOC.McpServer"` if you want reproducible behavior rather than always-latest.
+VS Code will prompt for your userid and password the first time the server starts. Requires the .NET 10 SDK for `dnx`, which downloads and runs the latest published version on demand — no separate install step needed. Pin a specific version with `"NOC.McpServer@1.0.7"` instead of `"NOC.McpServer"` if you want reproducible behavior rather than always-latest.
 
 **Note:** a `global.json` in your working directory pinning an SDK below .NET 10 will cause `dnx` to fail with a confusing "unrecognized argument" error rather than a clear version mismatch — check for one if this happens.
 
