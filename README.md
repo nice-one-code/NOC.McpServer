@@ -2,7 +2,7 @@
 
 An MCP (Model Context Protocol) server that exposes [NiceOneCode](https://www.niceonecode.com)'s JSON → C# class converter as a tool AI assistants can call directly — no more pasting JSON into a web form.
 
-Built with the official [ModelContextProtocol C# SDK](https://github.com/modelcontextprotocol/csharp-sdk), running over stdio transport.
+Built with the official [ModelContextProtocol C# SDK](https://github.com/modelcontextprotocol/csharp-sdk), running over stdio transport. Published on [NuGet.org](https://www.nuget.org/packages/NOC.McpServer) under the `McpServer` package type.
 
 ## What it does
 
@@ -12,8 +12,10 @@ Authentication is handled transparently: the server logs in to your NiceOneCode 
 
 ## Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download)
 - A NiceOneCode account (userid + password)
+- [.NET 9 SDK](https://dotnet.microsoft.com/download) or later, to install/run the tool
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) if you want to use `dnx` (VS Code, one-shot execution) instead of a persistent install
+- [.NET 9 SDK](https://dotnet.microsoft.com/download) specifically if building from source
 
 ## Creating an Account
 
@@ -46,20 +48,13 @@ curl -X POST \
 
 Use this returned value as `NOC_USERID` (not necessarily assumed to always match the `UserName` you submitted — always use the value the API actually returns, rather than the value you sent).
 
-## Setup
+## Install
 
-1. Clone the repo:
 ```bash
-   git clone https://github.com/nice-one-code/NOC.McpServer.git
-   cd NOC.McpServer
+dotnet tool install -g NOC.McpServer
 ```
 
-2. Build:
-```bash
-   dotnet build
-```
-
-3. Set your credentials as environment variables (see [Configuration](#configuration) below) — either in your shell or in your MCP client's config, whichever you're using.
+This gives you the `noc-mcp` command, used in every client config below.
 
 ## Configuration
 
@@ -74,16 +69,177 @@ Never commit real credentials. Set them via your MCP client's config (see below)
 
 ## Connecting to an MCP client
 
-Build first so a compiled DLL exists:
-```bash
-dotnet build
-```
-
-Then point your client at `bin/Debug/net9.0/NOC.McpServer.dll`. Use forward slashes in the path even on Windows.
-
 ### Claude Desktop
 
 Edit `claude_desktop_config.json` (Windows: `%APPDATA%\Claude\claude_desktop_config.json`, macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "noc-mcp",
+      "env": {
+        "NOC_USERID": "your-userid",
+        "NOC_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+Fully quit and reopen Claude Desktop after editing.
+
+### Claude Code
+
+```bash
+claude mcp add-json niceonecode '{"command":"noc-mcp","env":{"NOC_USERID":"your-userid","NOC_PASSWORD":"your-password"}}'
+```
+
+Verify with `claude mcp list`.
+
+### Codex
+
+```bash
+codex mcp add niceonecode --env NOC_USERID=your-userid --env NOC_PASSWORD=your-password -- noc-mcp
+```
+
+Verify inside a session with `/mcp`.
+
+### VS Code
+
+Add to `.vscode/mcp.json` in your workspace, or your global VS Code MCP settings:
+
+```json
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "NOC_USERID",
+      "description": "Your NiceOneCode account userid"
+    },
+    {
+      "type": "promptString",
+      "id": "NOC_PASSWORD",
+      "description": "Your NiceOneCode account password",
+      "password": true
+    }
+  ],
+  "servers": {
+    "NOC.McpServer": {
+      "type": "stdio",
+      "command": "dnx",
+      "args": ["NOC.McpServer", "--yes"],
+      "env": {
+        "NOC_USERID": "${input:NOC_USERID}",
+        "NOC_PASSWORD": "${input:NOC_PASSWORD}"
+      }
+    }
+  }
+}
+```
+
+VS Code will prompt for your userid and password the first time the server starts. Requires the .NET 10 SDK for `dnx`, which downloads and runs the latest published version on demand — no separate install step needed. Pin a specific version with `"NOC.McpServer@1.0.6"` instead of `"NOC.McpServer"` if you want reproducible behavior rather than always-latest.
+
+**Note:** a `global.json` in your working directory pinning an SDK below .NET 10 will cause `dnx` to fail with a confusing "unrecognized argument" error rather than a clear version mismatch — check for one if this happens.
+
+### Gemini CLI
+
+Edit `~/.gemini/settings.json` (global) or `.gemini/settings.json` (project-specific):
+
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "noc-mcp",
+      "env": {
+        "NOC_USERID": "your-userid",
+        "NOC_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+Restart Gemini CLI, then run `/mcp` to confirm it's connected.
+
+**Windows note:** if the server fails to start directly, wrap it through `cmd`:
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "cmd",
+      "args": ["/c", "noc-mcp"],
+      "env": { "NOC_USERID": "your-userid", "NOC_PASSWORD": "your-password" }
+    }
+  }
+}
+```
+
+### Windsurf
+
+Edit `~/.codeium/windsurf/mcp_config.json` (macOS/Linux) or `%USERPROFILE%\.codeium\windsurf\mcp_config.json` (Windows), or open it via the MCPs icon in the Cascade panel → **Configure**:
+
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "noc-mcp",
+      "env": {
+        "NOC_USERID": "your-userid",
+        "NOC_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+Fully quit and reopen Windsurf after saving.
+
+### Devin
+
+**Devin (cloud):** Settings → Connections → MCP servers → **Add a custom MCP**:
+
+```json
+{
+  "transport": "STDIO",
+  "command": "noc-mcp",
+  "args": [],
+  "env_variables": {
+    "NOC_USERID": "your-userid",
+    "NOC_PASSWORD": "your-password"
+  }
+}
+```
+
+**Devin for Terminal:** add to `.devin/config.json`:
+
+```json
+{
+  "mcpServers": {
+    "niceonecode": {
+      "command": "noc-mcp",
+      "env": {
+        "NOC_USERID": "your-userid",
+        "NOC_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+**Devin Desktop** shares Windsurf's `mcp_config.json` — no separate setup needed if already configured above.
+
+## Building from source
+
+If you'd rather build locally instead of installing from NuGet:
+
+```bash
+git clone https://github.com/nice-one-code/NOC.McpServer.git
+cd NOC.McpServer
+dotnet build
+```
+
+Then point any client above at the compiled DLL instead of `noc-mcp`, e.g. for Claude Desktop:
 
 ```json
 {
@@ -100,23 +256,7 @@ Edit `claude_desktop_config.json` (Windows: `%APPDATA%\Claude\claude_desktop_con
 }
 ```
 
-Fully quit and reopen Claude Desktop after editing.
-
-### Claude Code
-
-```bash
-claude mcp add-json niceonecode '{"command":"dotnet","args":["/absolute/path/to/NOC.McpServer/bin/Debug/net9.0/NOC.McpServer.dll"],"env":{"NOC_USERID":"your-username","NOC_PASSWORD":"your-password"}}'
-```
-
-Verify with `claude mcp list`.
-
-### Codex
-
-```bash
-codex mcp add niceonecode --env NOC_USERID=your-userid --env NOC_PASSWORD=your-password -- dotnet /absolute/path/to/NOC.McpServer/bin/Debug/net9.0/NOC.McpServer.dll
-```
-
-Verify inside a session with `/mcp`.
+Use forward slashes in the path even on Windows. The same substitution (`dotnet` + DLL path in place of `noc-mcp`) applies to any client config in this README.
 
 ## Testing locally with the MCP Inspector
 

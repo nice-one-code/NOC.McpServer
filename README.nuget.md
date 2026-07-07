@@ -86,6 +86,43 @@ codex mcp add niceonecode --env NOC_USERID=your-userid --env NOC_PASSWORD=your-p
 
 Verify inside a session with `/mcp`.
 
+## Usage with VS Code
+
+Add to `.vscode/mcp.json` in your workspace, or your global VS Code MCP settings:
+
+```json
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "NOC_USERID",
+      "description": "Your NiceOneCode account userid"
+    },
+    {
+      "type": "promptString",
+      "id": "NOC_PASSWORD",
+      "description": "Your NiceOneCode account password",
+      "password": true
+    }
+  ],
+  "servers": {
+    "NOC.McpServer": {
+      "type": "stdio",
+      "command": "dnx",
+      "args": ["NOC.McpServer", "--yes"],
+      "env": {
+        "NOC_USERID": "${input:NOC_USERID}",
+        "NOC_PASSWORD": "${input:NOC_PASSWORD}"
+      }
+    }
+  }
+}
+```
+
+VS Code will prompt for your userid and password the first time the server starts, rather than requiring them hardcoded in the file. Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) for `dnx`, which downloads and runs the package on demand — no separate `dotnet tool install` step needed.
+
+**Note:** if your working directory has a `global.json` pinning an SDK below .NET 10, `dnx` will fail with a confusing "unrecognized argument" error rather than a clear version-mismatch message — worth checking for a stray `global.json` if this happens.
+
 ## Usage with Gemini CLI
 
 Edit `~/.gemini/settings.json` (global) or `.gemini/settings.json` (project-specific):
