@@ -7,11 +7,11 @@
     <Nullable>enable</Nullable>
 
   <!-- MCP / NuGet packaging -->
-  <PackageType>McpServer</PackageType>
+  <PackageType>DotnetTool;McpServer</PackageType>
   <PackAsTool>true</PackAsTool>
   <ToolCommandName>noc-mcp</ToolCommandName>
   <PackageId>NOC.McpServer</PackageId>
-  <Version>1.0.4</Version>
+  <Version>1.0.5</Version>
 
   <!-- NuGet package metadata -->
   <Authors>NiceOneCode</Authors>

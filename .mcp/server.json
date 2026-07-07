@@ -2,13 +2,13 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "description": "MCP server exposing NiceOneCode's JSON-to-C# converter as an AI-callable tool.",
   "name": "io.github.mr-rahulmaurya/NOC.McpServer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "packages": [
     {
       "registryType": "nuget",
       "registryBaseUrl": "https://api.nuget.org/v3/index.json",
       "identifier": "NOC.McpServer",
-      "version": "1.0.4",
+      "version": "1.0.5",
       "transport": {
         "type": "stdio"
       },
